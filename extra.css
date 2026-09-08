@@ -1,0 +1,4 @@
+.row.triple{grid-template-columns:repeat(3,1fr)}
+.makeActions{display:grid;grid-template-columns:1.15fr 1fr;gap:10px}
+.makeActions button{padding-inline:8px}
+@media(max-width:520px){.row.triple{grid-template-columns:1fr 1fr}.row.triple label:last-child{grid-column:1/-1}}
