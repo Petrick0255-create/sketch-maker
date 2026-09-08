@@ -30,14 +30,14 @@ draw=function(progress=1){
   drawCaption(Math.max(0,Math.min(1,progress)));
 };
 
-async function createEnglishCaption(subject){
+async function createEnglishCaption(captionText){
   const response=await fetch(
     `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key=${encodeURIComponent(key())}`,
     {
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
-        contents:[{parts:[{text:`Convert the following Korean visual description into one natural, evocative English caption of at most 8 words. Preserve the meaning. Output only the English caption without quotation marks or punctuation at the end. Description: ${subject}`}]}],
+        contents:[{parts:[{text:`Translate the following caption into natural English. If it is already English, keep its meaning and lightly polish it. Do not describe or add anything. Output only one concise English caption, without quotation marks or final punctuation. Caption: ${captionText}`}]}],
         generationConfig:{temperature:0.45,maxOutputTokens:40}
       })
     }
@@ -50,12 +50,16 @@ async function createEnglishCaption(subject){
 
 async function makeWithCaption(){
   const subject=$('#script').value.trim();
+  const captionText=$('#captionInput').value.trim();
   if(!subject)return msg('그리고 싶은 대상을 입력하세요.',true);
   if(!key())return api();
-  msg('그림과 영어 문구를 만들고 있습니다…');
+  msg(captionText?'그림을 만들고 글자를 영어로 바꾸고 있습니다…':'그림을 만들고 있습니다…');
   $('#makeBtn').disabled=$('#regenerateBtn').disabled=true;
   try{
-    const results=await Promise.allSettled([generate(subject),createEnglishCaption(subject)]);
+    const results=await Promise.allSettled([
+      generate(subject),
+      captionText?createEnglishCaption(captionText):Promise.resolve('')
+    ]);
     if(results[0].status!=='fulfilled')throw results[0].reason;
     art=results[0].value;
     englishCaption=results[1].status==='fulfilled'?results[1].value:'';
