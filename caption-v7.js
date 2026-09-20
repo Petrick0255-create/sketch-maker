@@ -54,7 +54,7 @@ async function makeWithCaption(){
   if(!subject)return msg('그리고 싶은 대상을 입력하세요.',true);
   if(!key())return api();
   msg(captionText?'그림을 만들고 글자를 영어로 바꾸고 있습니다…':'그림을 만들고 있습니다…');
-  $('#makeBtn').disabled=$('#regenerateBtn').disabled=true;
+  $('#makeBtn').disabled=$('#regenerateBtn').disabled=$('#drawEffect').disabled=true;
   try{
     const results=await Promise.allSettled([
       generate(subject),
@@ -64,14 +64,16 @@ async function makeWithCaption(){
     art=results[0].value;
     englishCaption=results[1].status==='fulfilled'?results[1].value:'';
     trace(art);
-    if(!paths.length)throw new Error('추출할 선이 없습니다. 다시 생성해 주세요.');
+    if(!effectHasMarks())throw new Error('그림에서 그릴 부분을 찾지 못했습니다. 다시 생성해 주세요.');
     $('#previewBtn').disabled=$('#downloadBtn').disabled=$('#regenerateBtn').disabled=false;
-    msg(englishCaption?`연필선과 영문 문구 “${englishCaption}”를 만들었습니다.`:`${paths.length}개의 연필선을 추출했습니다.`);
+    const effectName=$('#drawEffect').selectedOptions[0].textContent;
+    msg(englishCaption?`${effectName} 효과와 영문 문구 “${englishCaption}”를 만들었습니다.`:`${effectName} 효과로 그림을 준비했습니다.`);
     play();
   }catch(error){
     msg(error.message,true);
   }finally{
     $('#makeBtn').disabled=false;
+    $('#drawEffect').disabled=false;
     if(art)$('#regenerateBtn').disabled=false;
   }
 }
