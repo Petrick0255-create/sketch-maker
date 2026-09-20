@@ -5,3 +5,4 @@
 .captionControls{grid-template-columns:repeat(2,1fr)}
 .outputControls{grid-template-columns:1fr 1.35fr}
 @media(max-width:520px){.captionControls,.outputControls{grid-template-columns:1fr 1fr}}
+.controls label[hidden]{display:none}
