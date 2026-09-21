@@ -5,6 +5,8 @@ const traceSingleFrame=trace;
 const drawStillFrame=draw;
 let motionFrames=[];
 let motionStates=[];
+const motionDrawEnd=.52;
+const motionFrameMs=120;
 
 function motionEnabled(){
   return motionModeSelect.value==='gif3';
@@ -123,20 +125,18 @@ trace=function(image){
 };
 
 function motionFrameIndex(progress){
-  const animationStart=.68;
-  if(progress<animationStart)return 0;
-  const elapsed=(progress-animationStart)*ms();
+  if(progress<motionDrawEnd)return 0;
+  const elapsed=(progress-motionDrawEnd)*ms();
   const sequence=[0,1,2,1];
-  return sequence[Math.floor(elapsed/150)%sequence.length];
+  return sequence[Math.floor(elapsed/motionFrameMs)%sequence.length];
 }
 
 draw=function(progress=1){
   if(!motionEnabled()||motionStates.length!==3)return drawStillFrame(progress);
   const value=Math.max(0,Math.min(1,progress));
-  const drawEnd=.68;
-  if(value<drawEnd){
+  if(value<motionDrawEnd){
     useMotionState(motionStates[0]);
-    drawSketchOnly(value/drawEnd);
+    drawSketchOnly(value/motionDrawEnd);
     drawCaption(value);
     return;
   }
