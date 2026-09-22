@@ -81,8 +81,14 @@ function splitMotionSheet(sheet){
   const frames=[];
   const cellWidth=sheet.width/motionFrameColumns;
   const cellHeight=sheet.height/2;
-  const cropWidth=Math.min(cellWidth,cellHeight*9/16);
-  const sourceHeight=Math.min(cellHeight,cropWidth*16/9);
+  // Models sometimes draw faint storyboard borders even when asked not to.
+  // Trim the cell edges before the 9:16 crop so those borders never reach tracing.
+  const insetX=cellWidth*.035;
+  const insetY=cellHeight*.06;
+  const usableWidth=cellWidth-insetX*2;
+  const usableHeight=cellHeight-insetY*2;
+  const cropWidth=Math.min(usableWidth,usableHeight*9/16);
+  const sourceHeight=Math.min(usableHeight,cropWidth*16/9);
   for(let index=0;index<motionFrameCount;index++){
     const column=index%motionFrameColumns;
     const row=Math.floor(index/motionFrameColumns);
@@ -92,8 +98,8 @@ function splitMotionSheet(sheet){
     const surface=frame.getContext('2d');
     surface.fillStyle='#020202';
     surface.fillRect(0,0,frame.width,frame.height);
-    const sourceX=column*cellWidth+(cellWidth-cropWidth)/2;
-    const sourceY=row*cellHeight+(cellHeight-sourceHeight)/2;
+    const sourceX=column*cellWidth+insetX+(usableWidth-cropWidth)/2;
+    const sourceY=row*cellHeight+insetY+(usableHeight-sourceHeight)/2;
     surface.drawImage(sheet,sourceX,sourceY,cropWidth,sourceHeight,0,0,frame.width,frame.height);
     frames.push(frame);
   }
