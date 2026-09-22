@@ -5,11 +5,11 @@ const traceSingleFrame=trace;
 const drawStillFrame=draw;
 const motionFrameCount=7;
 const motionFrameColumns=4;
-const motionPlaybackIndices=[0,2,3,5,6];
+const motionPlaybackIndices=[0,2,4,6,6,0,2,4,6];
 const motionFrameMs=240;
 let motionFrames=[];
 let motionStates=[];
-const motionDrawEnd=.52;
+const motionDrawEnd=.38;
 
 function motionEnabled(){
   return motionModeSelect.value==='gif7';
