@@ -5,7 +5,7 @@ const traceSingleFrame=trace;
 const drawStillFrame=draw;
 const motionFrameCount=7;
 const motionFrameColumns=4;
-const motionFrameMs=120;
+const motionFrameMs=240;
 let motionFrames=[];
 let motionStates=[];
 const motionDrawEnd=.52;
@@ -47,7 +47,7 @@ function stylePrompt(){
 async function requestMotionSheet(subject){
   const prompt=`Create one 4-column by 2-row animation storyboard sprite sheet for: "${subject}".
 Use exactly seven filled cells. Read them in this order: the four cells in the top row from left to right, then the first three cells in the bottom row from left to right. Leave the bottom-right eighth cell completely empty and pure black.
-The seven filled cells must show seven evenly spaced consecutive moments of one clear, seamless looping action. The last pose must transition naturally back to the first pose when played 1-2-3-4-5-6-7 repeatedly.
+The seven filled cells must show seven evenly spaced consecutive moments of one clear stop-motion action with a definite beginning and ending. Do not design a loop. The seventh pose must be a stable final pose that can remain on screen.
 The same subject must keep identical identity, face, hair, clothing, proportions, line style, camera angle, framing and scale in every cell.
 Keep every cell background pure black and empty. Center the full subject separately inside each filled cell with comfortable margins. Make each pose clearly different from the previous pose so the motion reads smoothly.
 Do not add panel borders, gutters, captions, labels, letters, numbers, arrows, watermark or UI. ${stylePrompt()}`;
@@ -139,7 +139,7 @@ trace=function(image){
 function motionFrameIndex(progress){
   if(progress<motionDrawEnd)return 0;
   const elapsed=(progress-motionDrawEnd)*ms();
-  return Math.floor(elapsed/motionFrameMs)%motionFrameCount;
+  return Math.min(motionFrameCount-1,Math.floor(elapsed/motionFrameMs));
 }
 
 draw=function(progress=1){
@@ -196,7 +196,7 @@ makeButton.onclick=async event=>{
   if(motionEnabled())msg('Gemini가 같은 대상의 연속 동작 7컷을 그리고 있습니다…');
   try{
     await originalMakeHandler.call(makeButton,event);
-    if(motionEnabled()&&motionStates.length===motionFrameCount)msg('연속 7컷의 선을 추출했습니다. 미리보기에서 반복 동작을 확인하세요.');
+    if(motionEnabled()&&motionStates.length===motionFrameCount)msg('연속 7컷의 선을 추출했습니다. 한 번 움직인 뒤 마지막 자세를 유지합니다.');
   }finally{
     motionModeSelect.disabled=false;
   }
