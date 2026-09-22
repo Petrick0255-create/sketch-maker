@@ -5,6 +5,7 @@ const traceSingleFrame=trace;
 const drawStillFrame=draw;
 const motionFrameCount=7;
 const motionFrameColumns=4;
+const motionPlaybackIndices=[0,2,3,5,6];
 const motionFrameMs=240;
 let motionFrames=[];
 let motionStates=[];
@@ -139,7 +140,8 @@ trace=function(image){
 function motionFrameIndex(progress){
   if(progress<motionDrawEnd)return 0;
   const elapsed=(progress-motionDrawEnd)*ms();
-  return Math.min(motionFrameCount-1,Math.floor(elapsed/motionFrameMs));
+  const playbackIndex=Math.min(motionPlaybackIndices.length-1,Math.floor(elapsed/motionFrameMs));
+  return motionPlaybackIndices[playbackIndex];
 }
 
 draw=function(progress=1){
